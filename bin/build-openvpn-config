@@ -2,7 +2,7 @@
 DNSNAME="unbound"
 
 DNS=`grep "$DNSNAME" /etc/hosts | head -n1 | awk '{print $1}'`
-cp /usr/local/share/openvpn/openvpn.conf /etc/openvpn/
+cp /usr/local/share/openvpn-templates/openvpn.conf /etc/openvpn/
 LOCALROUTE=`getIPNetwork`
 
 echo "push route $LOCALROUTE" >> /etc/openvpn/openvpn.conf
