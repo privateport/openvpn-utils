@@ -9,6 +9,7 @@ docker run sneakyscampi/getOVPNClientConfig (OPTIONS)
 
 Options:
         -n | --commonname	A one word description for the device of the certificate.  i.e MyPhone
+        -c | --configpath
 
 _______________________________________________
 by SneakyScampi
@@ -19,10 +20,8 @@ if [ $# -eq 0 ]; then
         print_help; exit 0
 fi
 
-CONFIGPATH=/etc/openvpn
-
 DEBUG=false
-OPTS=`getopt -o n: --long commonname: -n 'parse-options' -- "$@"`
+OPTS=`getopt -o n:c: --long commonname:,configpath: -n 'parse-options' -- "$@"`
 if [ $? != 0 ] ; then echo "Failed parsing options." >&2 ; exit 1 ; fi
 
 echo #OPTS
@@ -30,19 +29,23 @@ eval set -- "$OPTS"
 while true; do
   case "$1" in
         -h | --help )           print_help; exit 0; shift ;;
-        -n | --commonname )         COMMONNAME="$2"; shift; shift ;;
+        -n | --commonname )     COMMONNAME="$2"; shift; shift ;;
+        -c | --configpath )	CONFIGPATH="$2"; shift; shift ;;
         -- ) shift; break ;;
         * ) break ;;
   esac
 done
 
-DOMAIN=`cat $CONFIGPATH/ca/DOMAIN.txt`
-if [ -z "$DOMAIN" ]; then
-	echo "Error: CA files could not be found."; exit 0
+if [ -z "$CONFIGPATH" ] || [ -z "$DOMAINNAME" ]; then
+	print_help
+	exit 1
 fi
-if [ -z "$COMMONNAME" ]; then
-	echo "Error, commonname not supplied"; exit 1
+
+if [ ! -f "$CONFIGPATH/ca/ca.crt" ]; then
+	echo "Error: CA files could not be found."
+	exit 1
 fi
+
 
 OVPNCONFIG=$CONFIGPATH/$COMMONNAME/client.conf
 
@@ -72,5 +75,5 @@ echo "<tls-auth>" >> $OVPNCONFIG
 cat $CONFIGPATH/server/ta.key >> $OVPNCONFIG
 echo "</tls-auth>" >> $OVPNCONFIG
 
-cat $OVPNCONFIG
+
 
