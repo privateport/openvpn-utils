@@ -50,7 +50,7 @@ OVPNCONFIG=$CONFIGPATH/$COMMONNAME/client.conf
 #Let's build the client config
 
 #Base Config
-cp /usr/local/share/openvpn/client.conf	$OVPNCONFIG
+cp /usr/local/share/openvpn-templates/client.conf	$OVPNCONFIG
 
 #Private Key
 echo "<key>" >> $OVPNCONFIG
